@@ -38,5 +38,5 @@ df_sample = pd.DataFrame({
     "Value": [quantity, price, hour, month]
 })
 
-model = load_model("model1")
+
 st.bar_chart(df_sample.set_index("Feature"))
