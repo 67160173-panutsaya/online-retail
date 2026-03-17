@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import streamlit as st
 import pickle
 import pandas as pd
@@ -74,5 +73,5 @@ df_sample = pd.DataFrame({
     "Feature": ["Quantity", "UnitPrice", "Hour", "Month"],
     "Value": [quantity, price, hour, month]
 })
->>>>>>> 9001a600f61977a563e2a61d6bd258657df5d223
+model = load_model("model1")
 st.bar_chart(df_sample.set_index("Feature"))
