@@ -3,12 +3,13 @@ import streamlit as st
 import pickle
 import pandas as pd
 import joblib
+import os
+import joblib
 
-# โหลดโมเดล
+BASE_DIR = os.path.dirname(__file__)
 
-
-model = joblib.load("sales_model.pkl")
-encoder = joblib.load("encoder.pkl")
+model = joblib.load(os.path.join(BASE_DIR, "sales_model.pkl"))
+encoder = joblib.load(os.path.join(BASE_DIR, "encoder.pkl"))
 
 st.set_page_config(page_title="Retail Prediction", layout="centered")
 
