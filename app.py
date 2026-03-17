@@ -1,49 +1,38 @@
 import streamlit as st
+import pickle
 import pandas as pd
 import joblib
 
-st.set_page_config(
-    page_title="Sales Prediction App",
-    page_icon="📊",
-    layout="centered"
-)
+# โหลดโมเดล
 
-st.markdown("""
-<style>
-.stButton>button {
-    background-color: #03a9f4;
-    color: white;
-    border-radius: 10px;
-    height: 3em;
-    width: 100%;
-}
-</style>
-""", unsafe_allow_html=True)
 
-st.title("📊 Sales Prediction Dashboard")
-st.markdown("ทำนายยอดขายจาก ราคา เวลา และประเทศ 🌍")
-
-# โหลดโมเดล + encoder
 model = joblib.load("sales_model.pkl")
-le = joblib.load("encoder.pkl")
-print(model.feature_names_in_)
+encoder = joblib.load("encoder.pkl")
 
+st.set_page_config(page_title="Retail Prediction", layout="centered")
 
-# รับค่าจากผู้ใช้
-unit_price = st.number_input("Unit Price", 0.0, 1000.0)
-hour = st.slider("Hour", 0, 23)
-month = st.slider("Month", 1, 12)
+st.title("🛒 Online Retail Prediction")
+st.write("Predict total sales based on input data")
 
-country_name = st.selectbox("Country", le.classes_)
-country = le.transform([country_name])[0]
+# input
+quantity = st.number_input("Quantity", min_value=1, value=1)
+price = st.number_input("Unit Price", min_value=0.0, value=1.0)
+hour = st.slider("Hour", 0, 23, 12)
+month = st.slider("Month", 1, 12, 6)
 
+# dropdown ประเทศ
+country = st.selectbox("Country", encoder.classes_)
+country_encoded = encoder.transform([country])[0]
 
-
-# 👇 แล้วค่อยเอาไปใช้
+# predict
 if st.button("Predict"):
-    input_data = pd.DataFrame([[1, unit_price, hour, month]],
-                          columns=['Quantity', 'UnitPrice', 'Hour', 'Month'])
+    result = model.predict([[quantity, price, hour, month, country_encoded]])
+    st.success(f"💰 Predicted Total Price: {result[0]:.2f}")
 
-    prediction = model.predict(input_data)
-
-    st.success(f"Predicted Quantity: {prediction[0]}")
+# เพิ่มกราฟเล็ก ๆ (ดูโปรขึ้น)
+st.subheader("📊 Sample Data Preview")
+df_sample = pd.DataFrame({
+    "Feature": ["Quantity", "UnitPrice", "Hour", "Month"],
+    "Value": [quantity, price, hour, month]
+})
+st.bar_chart(df_sample.set_index("Feature"))
